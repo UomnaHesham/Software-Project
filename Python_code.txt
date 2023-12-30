@@ -1,0 +1,148 @@
+class Customer:
+    def __init__(self, name, phone, email, username, password):
+        self.name = name
+        self.phone = phone
+        self.email = email
+        self.username = username
+        self.password = password
+
+class HotelSystem:
+    def __init__(self):
+        self.rooms = {
+            "pool view": {
+                "single": {
+                    "availability": True,
+                    "price": 4000
+                },
+                "double": {
+                    "availability": True,
+                    "price": 3000
+                }
+            },
+            "garden view": {
+                "single": {
+                    "availability": True,
+                    "price": 3000
+                },
+                "double": {
+                    "availability": True,
+                    "price": 2000
+                }
+            },
+            "nile view": {
+                "single": {
+                    "availability": True,
+                    "price": 5000
+                },
+                "double": {
+                    "availability": True,
+                    "price": 4000
+                }
+            }
+        }
+        self.logged_in = False
+        self.current_user = None
+        self.customers = {}
+
+    def sign_in(self):
+        username = input("Enter your username: ")
+        password = input("Enter your password: ")
+
+        # Check if the username and password are valid
+        # You can replace this with your own authentication logic
+        if self.validate_credentials(username, password):
+            print("Login successful!")
+            self.logged_in = True
+            self.current_user = username
+        else:
+            print("Invalid username or password. Please try again.")
+
+    def sign_up(self):
+        name = input("Enter your name: ")
+        phone = input("Enter your phone number: ")
+        email = input("Enter your email: ")
+        username = input("Enter a username: ")
+        password = input("Enter a password: ")
+
+        # Create a new customer instance
+        customer = Customer(name, phone, email, username, password)
+        
+        # Store the customer information
+        self.customers[username] = customer
+
+        print("Signup successful!")
+        self.logged_in = True
+        self.current_user = username
+
+    def validate_credentials(self, username, password):
+        # Check if the username exists in the customers dictionary
+        if username in self.customers:
+            # Check if the provided password matches the stored password
+            return self.customers[username].password == password
+        else:
+            return False
+
+    def choose_room_view(self):
+        print("Available room views:")
+        for view in self.rooms:
+            print(view)
+
+        room_view = input("Enter the room view type: ")
+        while room_view not in self.rooms:
+            print("Invalid room view. Please try again.")
+            room_view = input("Enter the room view type: ")
+
+        return room_view
+
+    def choose_room_type(self):
+        room_type = input("Enter the room type (single/double): ")
+        while room_type not in ["single", "double"]:
+            print("Invalid room type. Please try again.")
+            room_type = input("Enter the room type (single/double): ")
+
+        return room_type
+
+    def book_room(self, room_view, room_type, check_in_date, check_out_date):
+        room = self.rooms[room_view][room_type]
+        if room["availability"]:
+            room["availability"] = False
+            print("Room booked successfully!")
+            print("Room details:")
+            print("Room view:", room_view)
+            print("Room type:", room_type)
+            print("Check-in date:", check_in_date)
+            print("Check-out date:", check_out_date)
+            print("Price per night:", room["price"])
+        else:
+            print("Sorry, the room is not available for the specified dates.")
+
+    def run(self):
+        print("Welcome to the Hotel System!")
+        while True:
+            self.logged_in = False
+            self.current_user = None
+
+            while not self.logged_in:
+                choice = input("Please choose an option:\n1. Sign in\n2. Sign up\n")
+                if choice == "1":
+                    self.sign_in()
+                elif choice == "2":
+                    self.sign_up()
+                else:
+                    print("Invalid choice. Please try again.")
+
+            room_view = self.choose_room_view()
+            room_type = self.choose_room_type()
+
+            check_in_date = input("Enter the check-in date (mm/dd/yyyy): ")
+            check_out_date = input("Enter the check-out date (mm/dd/yyyy): ")
+
+            self.book_room(room_view, room_type, check_in_date, check_out_date)
+
+            restart = input("Do you want to make another booking? (yes/no): ")
+            if restart.lower() != "yes":
+               
+               break
+
+hotel_system = HotelSystem()
+hotel_system.run()
